@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Your Blend</title>
+<style>
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: transparent;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px 28px;
+  max-width: 560px;
+  width: 100%;
+  border: 1px solid #DDE8E4;
+}
+
+.badge {
+  display: inline-block;
+  background: #EEF4F1;
+  color: #1B3A2F;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 13px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 26px;
+}
+
+.dot {
+  height: 5px;
+  border-radius: 3px;
+  background: #D6E4DF;
+  flex: 1;
+  transition: background 0.3s;
+}
+
+.dot.active {
+  background: #1B3A2F;
+}
+
+.dot.done {
+  background: #5A8A74;
+}
+
+.q-label {
+  font-size: 12px;
+  color: #5A7268;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.q-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1B3A2F;
+  line-height: 1.35;
+  margin-bottom: 26px;
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ans-btn {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1.5px solid #C8DDD7;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1B3A2F;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  line-height: 1.45;
+  font-family: inherit;
+}
+
+.ans-btn:hover {
+  background: #1B3A2F;
+  color: #ffffff;
+  border-color: #1B3A2F;
+}
+
+.step {
+  display: none;
+}
+
+.step.active {
+  display: block;
+}
+
+.result-header {
+  background: #1B3A2F;
+  border-radius: 12px;
+  padding: 26px 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.result-icon {
+  font-size: 26px;
+  color: #A8C8BC;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.result-tier {
+  font-size: 11px;
+  color: #A8C8BC;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 7px;
+}
+
+.result-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.result-sub {
+  font-size: 13px;
+  color: #A8C8BC;
+  line-height: 1.5;
+}
+
+.result-desc {
+  font-size: 14px;
+  color: #3D5A50;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.cta-btn {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  background: #1B3A2F;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  transition: opacity 0.15s;
+  font-family: inherit;
+}
+
+.cta-btn:hover {
+  opacity: 0.87;
+}
+
+.restart-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px;
+  background: transparent;
+  color: #5A7268;
+  border: 1.5px solid #C8DDD7;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.restart-btn:hover {
+  border-color: #1B3A2F;
+  color: #1B3A2F;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+  .card {
+    padding: 24px 18px;
+    border-radius: 14px;
+  }
+  .q-text {
+    font-size: 17px;
+  }
+  .result-name {
+    font-size: 18px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="card" id="quiz-card">
+
+  <div class="badge">Find your blend</div>
+
+  <div class="progress">
+    <div class="dot active" id="d1"></div>
+    <div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div>
+  </div>
+
+  <div class="step active" id="s1">
+    <div class="q-label">Question 1 of 3</div>
+    <div class="q-text">How does a standard 10mg edible usually feel for you?</div>
+    <div class="answers">
+      <button class="ans-btn" onclick="answer(0)">Pretty strong — I take it slow and feel it clearly</button>
+      <button class="ans-btn" onclick="answer(1)">Just right — I feel a solid effect but stay in control</button>
+      <button class="ans-btn" onclick="answer(2)">Barely noticeable — it takes a lot more to feel anything</button>
+    </div>
+  </div>
+
+  <div class="step" id="s2">
+    <div class="q-label">Question 2 of 3</div>
+    <div class="q-text">Which kind of experience sounds most appealing right now?</div>
+    <div class="answers">
+      <button class="ans-btn" onclick="answer(0)">Fast-acting and easy to dial in</button>
+      <button class="ans-btn" onclick="answer(1)">Full, balanced, and long-lasting</button>
+      <button class="ans-btn" onclick="answer(2)">Deep, intense, and extended</button>
+    </div>
+  </div>
+
+  <div class="step" id="s3">
+    <div class="q-label">Question 3 of 3</div>
+    <div class="q-text">How long have you been using cannabinoid products?</div>
+    <div class="answers">
+      <button class="ans-btn" onclick="answer(0)">Under a year — still finding my range</button>
+      <button class="ans-btn" onclick="answer(1)">A couple of years — regular use, solid tolerance</button>
+      <button class="ans-btn" onclick="answer(2)">Many years — I've built up a significant tolerance</button>
+    </div>
+  </div>
+
+  <div class="step" id="result">
+    <div class="result-header">
+      <div class="result-icon" id="r-icon"></div>
+      <div class="result-tier" id="r-tier"></div>
+      <div class="result-name" id="r-name"></div>
+      <div class="result-sub" id="r-sub"></div>
+    </div>
+    <div class="result-desc" id="r-desc"></div>
+    <a class="cta-btn" id="r-cta" href="#" target="_blank">Shop now</a>
+    <button class="restart-btn" onclick="restart()">Start over</button>
+  </div>
+
+</div>
+
+<script>
+  var score = 0;
+  var step = 1;
+
+  var results = [
+    {
+      icon: '&#9830;',
+      tier: 'Experienced tier',
+      name: 'Hero Dose Rapid Onset THC Gummies',
+      sub: '15mg Delta-9 + 15mg Delta-8 + 0.5mg THCp',
+      desc: 'A well-rounded blend that steps up meaningfully from standard 10mg products, with a 5 to 15 minute onset so you always know where you are before deciding on more. Available in a 10-count for $39.',
+      url: 'https://mood.com/product/hero-dose-rapid-onset-thc-gummies'
+    },
+    {
+      icon: '&#9670;',
+      tier: 'Full-strength tier',
+      name: '30mg Delta-9 THC Gummies',
+      sub: '30mg Delta-9 THC — pure and precise',
+      desc: 'Full-potency Delta-9 for experienced consumers who want their cannabinoid clean and direct, with no additional compounds diluting the formula. Mango flavored, 45 to 120 minute onset. Available in a 10-count for $39.',
+      url: 'https://mood.com/product/30mg-delta-9-thc-gummies'
+    },
+    {
+      icon: '&#9679;',
+      tier: 'Maximum potency tier',
+      name: '50mg Delta-8 Gummies',
+      sub: '50mg Delta-8 + 50mg CBD — smooth and sustained',
+      desc: 'Built for consumers who need serious serving sizes to feel anything. The 50mg Delta-8 and 50mg CBD pairing delivers a deep, smooth, body-focused experience that lasts. Tropical Fruit Mix flavors. Available in a 10-count for $39.',
+      url: 'https://mood.com/product/50mg-delta-8-gummies'
+    }
+  ];
+
+  function answer(value) {
+    score += value;
+
+    if (step < 3) {
+      document.getElementById('s' + step).classList.remove('active');
+      document.getElementById('d' + step).classList.remove('active');
+      document.getElementById('d' + step).classList.add('done');
+      step++;
+      document.getElementById('s' + step).classList.add('active');
+      document.getElementById('d' + step).classList.add('active');
+    } else {
+      document.getElementById('s3').classList.remove('active');
+      document.getElementById('d3').classList.remove('active');
+      document.getElementById('d3').classList.add('done');
+
+      var index = score <= 2 ? 0 : score <= 4 ? 1 : 2;
+      var r = results[index];
+
+      document.getElementById('r-icon').innerHTML = r.icon;
+      document.getElementById('r-tier').textContent = r.tier;
+      document.getElementById('r-name').textContent = r.name;
+      document.getElementById('r-sub').textContent = r.sub;
+      document.getElementById('r-desc').textContent = r.desc;
+      document.getElementById('r-cta').href = r.url;
+
+      document.getElementById('result').classList.add('active');
+    }
+
+    resizeParent();
+  }
+
+  function restart() {
+    score = 0;
+    step = 1;
+
+    ['s1', 's2', 's3', 'result'].forEach(function(id) {
+      document.getElementById(id).classList.remove('active');
+    });
+
+    ['d1', 'd2', 'd3'].forEach(function(id) {
+      var dot = document.getElementById(id);
+      dot.classList.remove('active', 'done');
+    });
+
+    document.getElementById('s1').classList.add('active');
+    document.getElementById('d1').classList.add('active');
+
+    resizeParent();
+  }
+
+  function resizeParent() {
+    var height = document.getElementById('quiz-card').scrollHeight + 40;
+    window.parent.postMessage({ frameHeight: height }, '*');
+  }
+
+  window.addEventListener('load', resizeParent);
+  window.addEventListener('resize', resizeParent);
+</script>
+
+</body>
+</html>
